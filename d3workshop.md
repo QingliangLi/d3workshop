@@ -123,7 +123,7 @@ ylabel = labels.append('text')
 ### Individual team bar charts 
 Next we will start displaying our data in the graph. Ultimately, we want to show the progression of total games won for each baseball game over a period of time. Each team will be represented by a bar. 
 
-To set up the bar groups we must first group the data by team: 
+To set up the bar groups we must first group the data by team. In D3, instead of telling D3 what to do, think of it as you are telling D3 what you want. `svg.selectAll(".bar)` tells D3 you want bar elements to correspond to the data with one bar per datum. Then, create another SVG group element that transforms the bars to display horizontally instead of vertially: 
 
 ```
 svg.selectAll(".bar")
