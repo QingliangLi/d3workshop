@@ -96,7 +96,7 @@ yAxis = d3.axisLeft(y)
 
 ```
 
-![Create X-axis](images/create_x_axis.png)
+![Create X-axis](img/create_x_axis.png)
 
 In conjunction to the axes we want to add gridlines: 
 
@@ -157,7 +157,7 @@ svg.selectAll(".bar")
 
 ```
 
-![Create bar element](images/create_bar_element.png)
+![Create bar element](img/create_bar_element.png)
 
 Now we will add rectangles in each bar element with unique widths to display the total games won for each respective team. This is defined by `.attr("width", (d,i) => x(d.value))`: 
 ```
@@ -167,7 +167,7 @@ rects = bar.append('rect')
   .style('fill', d => d3.interpolateRdYlBu(d.value/100))
 
 ```
-![Create bar element](images/create_rect.png)
+![Create bar element](img/create_rect.png)
 
 Add labels to identify each team: 
 ```
@@ -204,7 +204,41 @@ barLabels = bar.append('text')
 
 ```
 
-![Added team, logo and games won labels](images/team_logo_games_labels.png)
+![Added team, logo and games won labels](img/team_logo_games_labels.png)
 
 
+### Animating the graph
 
+Since we want to display the progression of wins over a period of time, we want the graph to change as time passes so we must first display the date: 
+
+```
+const formatDate = d3.timeFormat('%b %-d, %Y')
+let dateLabel = labels.append('text')
+  .attr('id', 'date')
+  .attr('transform', `translate(0,-40)`)
+  .text(formatDate(chartDate))
+
+```
+Based on the interval T we set up, we will update the bar chart dimensions: 
+
+```
+rects.data(data)
+  .transition().duration(T)
+  .attr("width", d => x(d.value))
+  .style('fill', d => d3.interpolateRdYlBu(d.value/100))
+imgs.data(data)
+  .transition().duration(T)
+    .attr('x', d => x(d.value) + 5)
+barLabels.data(data)
+  .transition().duration(T)
+    .attr('x', d => x(d.value) + 10 + imgsize)
+    .attr('y', y.bandwidth()/2 + 5)
+    .text(d => d.value)
+
+```
+
+And resort the data so it is shown in descending order: 
+
+```
+data.sort((a,b) => d3.descending(a.value,b.value));
+```
