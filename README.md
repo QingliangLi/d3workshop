@@ -18,11 +18,12 @@ The code we will be working with can be found at: https://github.com/caocscar/d3
 ### Getting D3
 To use D3, we must load the d3.js library into our HTML file from the CDN with the following code: 
 <br>
-```
+
+```html
 <script src="https://d3js.org/d3.v5.min.js"></script>
 ```
 We'll also use the d3-array library to do some data wrangling to get the data in the right format:
-```
+```html
 <script src="https://d3js.org/d3-array.v2.min.js"></script>
 ```
 
@@ -34,24 +35,25 @@ Let us follow along with our code.
 <br>
 <br>
 First define the `margin` object with properties for the four sides clockwise from the top with the following code:
-```
+```javascript
 margin = {top: 80, right: 90, bottom: 30+50, left: 120}
 ```
 
 Next define `width` and `height`as the inner dimensions of the chart area: 
 
-```
+```javascript
 width = 900 - margin.left - margin.right
 height = 1500 - margin.top - margin.bottom
 ```
 
 Lastly, define `svg` as a SVG element with three attributes (class, width and height) and translate its the origin to the top-left corner of the chart area with a G element. 
-```
+
+```javascript
 svg = d3.select('body').append('svg')
         .attr("class", "chart")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
-        .append("g")
+    .append("g")
         .attr("transform", "translate(${margin.left},${margin.top})")
 
 ```
@@ -61,12 +63,12 @@ Now that the graph has been created, we need to load in our data. Today we will 
 
 We will access the csv file through a url:
 
-```
- const fileLocation = 'https://gist.githubusercontent.com/caocscar/8cdb75721ea4f6c8a032a00ebc73516c/raw/854bbee2faffb4f6947b6b6c2424b18ca5a8970e/mlb2018.csv'
+```javascript
+const fileLocation = 'https://gist.githubusercontent.com/caocscar/8cdb75721ea4f6c8a032a00ebc73516c/raw/854bbee2faffb4f6947b6b6c2424b18ca5a8970e/mlb2018.csv'
 ```
 Next we will parse the file, convert it into an array of objects and filter it by date, only taking in data entries before 4/3/2018. By this date, every team has won at least one game. 
 
-```
+```javascript
 DATA = await d3.csv(fileLocation, type)
 chartDate = new Date(2018,3,3)
 data = filterData(chartDate)
@@ -75,18 +77,17 @@ data = filterData(chartDate)
 
 `type` is a function we wrote that takes in the data and converts the date strings into numeric notation. Overall, it just makes the data loading process much easier. 
 
-```
+```javascript
 function type(d) {
   const formatDate = d3.timeParse('%Y%m%d')
   d.date = formatDate(d.date)
   return d
 }
-
 ```
 
 `filterData` is also a function we wrote that takes in the data, iterates through it, counts how many games each team has won prior to the specified `chartDate`, and returns a new array with this information. 
 
-```
+```javascript
 function filterData(chartDate) {
   const snapshot = DATA.filter(d => d.date <= chartDate)
   const wins = d3.rollup(snapshot, v => v.length, d => d.team) 
@@ -100,20 +101,20 @@ SVG stands for scalable vector graphics and up above, we defined and shifted our
 
 `.append("g")` allows us to do this by appending a SVG group element to the already defined SVG element:
 
-```
+```javascript
 svg.append("g")
-  .attr("class", "x axis")
-  .call(xAxis);
+        .attr("class", "x axis")
+        .call(xAxis);
 
 svg.append("g")
-  .attr("class", "y axis")
-  .call(yAxis);
+        .attr("class", "y axis")
+        .call(yAxis);
 
 xAxis = d3.axisTop(x)
-  .ticks(6)
+        .ticks(6)
 
 yAxis = d3.axisLeft(y)
-  .tickFormat('')
+        .tickFormat('')
 
 ```
 
@@ -121,40 +122,41 @@ yAxis = d3.axisLeft(y)
 
 In conjunction to the axes we want to add gridlines: 
 
-```
-let gridlines = d3.axisTop(x)
-  .ticks(6)
-  .tickSize(-height)
-  .tickFormat("")
+```javascript
+gridlines = d3.axisTop(x)
+        .ticks(6)
+        .tickSize(-height)
+        .tickFormat("")
 
 svg.append("g")			
-  .attr("class", "grid")
-  .call(gridlines)
+          .attr("class", "grid")
+          .call(gridlines)
 
-  ```
+```
 
 As well as labels: 
 
-```
+```javascript
 labels = svg.append('g')
-  .attr('class', 'label')
+        .attr('class', 'label')
 
 xlabel = labels.append('text')
-  .attr('transform', `translate(${width},-40)`)
-  .text('Wins')
+        .attr('transform', `translate(${width},-40)`)
+        .text('Wins')
 
 ylabel = labels.append('text')
-  .attr('transform', `translate(-80,${height/2}) rotate(-90)`) // order matters
-  .text('Teams')
+        .attr('transform', 'translate(-80,${height/2}) rotate(-90)') 
+        .text('Teams')
 
 ```
 
 Besides these also need to define the FINISH THISSSS: 
-  ```
-  y = d3.scaleBand()
-      .range([height, 0])
-      .padding(0.33)
-      .domain(data.map(d => d.team).reverse());
+
+```javascript
+y = d3.scaleBand()
+        .range([height, 0])
+        .padding(0.33)
+        .domain(data.map(d => d.team).reverse());
 
 
   x = d3.scaleLinear()
@@ -169,59 +171,60 @@ To set up the groups, we must first create bars to contain the collective inform
 
 In D3, instead of telling D3 what to do, think of it as you are telling D3 what you want. `svg.selectAll(".bar)` tells D3 you want bar elements to correspond to the data with one bar per datum. Then, create another SVG group element to space out the bars evenly: 
 
-```
+```javascript
 svg.selectAll(".bar")
-  .data(data)
-  .join("g")
-    .attr("class", "bar")
-    .attr("transform", d => `translate(0,${y(d.team)})`)
+    .data(data)
+    .join("g")
+        .attr("class", "bar")
+        .attr("transform", d => `translate(0,${y(d.team)})`)
 
 ```
 
 ![Create bar element](img/create_bar_element.png)
 
-Now we will add rectangles in each bar element with unique widths to display the total games won for each respective team. This is defined by `.attr("width", (d,i) => x(d.value))`: 
-```
+Now we will add rectangles in each bar element with unique widths to display the total games won for each respective team. This is defined by `.attr("width", d => x(d.value))`:  
+
+```javascript
 rects = bar.append('rect')
-  .attr("width", d => x(d.value))
-  .attr("height", y.bandwidth())
-  .style('fill', d => d3.interpolateRdYlBu(d.value/100))
+        .attr("width", d => x(d.value))
+        .attr("height", y.bandwidth())
+    .style('fill', d => d3.interpolateRdYlBu(d.value/100))
 
 ```
 ![Create bar element](img/create_rect.png)
 
 Add labels to identify each team: 
-```
+```javascript
 bar.append('text')
-  .attr('class', 'team')
-  .attr('x', -10)
-  .attr('y', y.bandwidth()/2 + 5)
-  .text(d => d.team)
+        .attr('class', 'team')
+        .attr('x', -10)
+        .attr('y', y.bandwidth()/2 + 5)
+        .text(d => d.team)
 
 ```
 
 As well as each team's logo: 
 
-```
+```javascript
 const imgsize = 40
 imgs = bar.append("svg:image")
-  .attr('class', 'logo')
-  .attr('x', d => x(d.value) + 5)
-  .attr('y', -5)
-  .attr('width', imgsize)
-  .attr('height', imgsize)
-  .attr("xlink:href", d => `http://www.capsinfo.com/images/MLB_Team_Logos/${urls[d.team]}.png`)
+        .attr('class', 'logo')
+        .attr('x', d => x(d.value) + 5)
+        .attr('y', -5)
+        .attr('width', imgsize)
+        .attr('height', imgsize)
+        .attr("xlink:href", d => `http://www.capsinfo.com/images/MLB_Team_Logos/${urls[d.team]}.png`)
 
 ```
 
 And lastly, a label for the number of games the team has won: 
 
-```
+```javascript
 barLabels = bar.append('text')
-  .attr('class', 'barlabel')
-  .attr('x', d => x(d.value) + 10 + imgsize)
-  .attr('y', y.bandwidth()/2 + 5)
-  .text(d => d.value)
+        .attr('class', 'barlabel')
+        .attr('x', d => x(d.value) + 10 + imgsize)
+        .attr('y', y.bandwidth()/2 + 5)
+        .text(d => d.value)
 
 ```
 
@@ -232,34 +235,32 @@ barLabels = bar.append('text')
 
 Since we want to display the progression of wins over a period of time, we want the graph to change as time passes so we must first display the date: 
 
-```
+```javascript
 const formatDate = d3.timeFormat('%b %-d, %Y')
-let dateLabel = labels.append('text')
-  .attr('id', 'date')
-  .attr('transform', `translate(0,-40)`)
-  .text(formatDate(chartDate))
-
+dateLabel = labels.append('text')
+        .attr('id', 'date')
+        .attr('transform', `translate(0,-40)`)
+        .text(formatDate(chartDate))
 ```
+
 Next, we will set up a variable T, which determines the time between each sorting transition in milliseconds. Every 300 milliseconds, the date label we set up above will change and update. We will also redefine the data based on the new date so we can get the cumulative games won prior to the new date. 
 
-```
+```javascript
 const T = 300
-let dailyUpdate = setInterval(function() {
+dailyUpdate = setInterval(function() {
 
   chartDate = d3.timeDay.offset(chartDate,1)
   dateLabel.transition().duration(T)
-      .text(formatDate(chartDate))
+          .text(formatDate(chartDate))
   data = filterData(chartDate)
 
 ```
 
 Based on the interval T we set up, we also need to update the graph's axes to make them responsive to the changing scores. For the x axis we are incrementing by 5s: 
 
-```
-(function changes)
+```javascript
 x.domain([0, Math.ceil(d3.max(data, d => d.value)/5)*5]);
 
-(visual changes)
 svg.select('.x.axis').transition().duration(T)
     .call(xAxis);
 svg.select('.grid').transition().duration(T)
@@ -268,45 +269,45 @@ svg.select('.grid').transition().duration(T)
 
 For the y axis we are just rearranging the team names based on the new order:
 
-```
+```javascript
 y.domain(data.map(d => d.team).reverse());
 bar.transition().duration(T)
-    .attr("transform", d => `translate(0,${y(d.team)})`)
+        .attr("transform", d => `translate(0,${y(d.team)})`)
 ```
 
-Next, we must also update each team's bar graph: 
+Next, we must also update each team's bar graph. 
 
-```
+As part of the animation, we include `.style('fill', d => d3.interpolateRdYlBu(d.value/100))` which defines the number of games won by each team as a fraction between 0 and 1. As teams win more games, the bar will gradually change from red to yellow to blue: 
+
+```javascript
 rects.data(data)
-  .transition().duration(T)
-  .attr("width", d => x(d.value))
-  .style('fill', d => d3.interpolateRdYlBu(d.value/100))
+    .transition().duration(T)
+        .attr("width", d => x(d.value))
+        .style('fill', d => d3.interpolateRdYlBu(d.value/100))
 
-(0, 100) --> (red, blue) 
-as teams win more games they go from red to blue 
 
 ```
 As well as the positioning of the images: 
 
-```
+```javascript
 imgs.data(data)
-  .transition().duration(T)
-    .attr('x', d => x(d.value) + 5)
+    .transition().duration(T)
+        .attr('x', d => x(d.value) + 5)
 ```
 
 And the label for the number of games won: 
 
-```
+```javascript
 barLabels.data(data)
-  .transition().duration(T)
-    .attr('x', d => x(d.value) + 10 + imgsize)
-    .attr('y', y.bandwidth()/2 + 5)
-    .text(d => d.value)
+    .transition().duration(T)
+        .attr('x', d => x(d.value) + 10 + imgsize)
+        .attr('y', y.bandwidth()/2 + 5)
+        .text(d => d.value)
 
 ```
 
 And resort the data so it is shown in descending order: 
 
-```
+```javascript
 data.sort((a,b) => d3.descending(a.value,b.value));
 ```
