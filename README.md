@@ -4,10 +4,10 @@ D3 is a javascript library for manipulating documents based on data and is often
 ### Key Components
 - #### HyperText Markup Language (HTML)
     - This is what web pages are made of and how you will ultimately present your information to the user. 
-- #### Javascript 
-    - This is the code contained inside the HTML that makes up the dynamically represented data you will create. 
 - #### Cascading Style Sheets (CSS)
-    -  This describes the formatting of a document and will help with the presentation of the individual components. 
+    -  This describes the formatting of a document and will help with the presentation of the individual components.
+- #### Javascript 
+    - This is the code contained inside the HTML that makes up the dynamically represented data you will create.  
 - #### Web Servers
     - This will allow you to access your HTML files and provides the structure that allows it to be displayed on a web browser. You can either set up a local server or get access to a remote one.
 
@@ -21,7 +21,7 @@ To use D3, we must load the d3.js library into our HTML file from the CDN with t
 ```
 <script src="https://d3js.org/d3.v5.min.js"></script>
 ```
-And for our specific example today, we will also load this in as well:
+We'll also use the d3-array library to do some data wrangling to get the data in the right format:
 ```
 <script src="https://d3js.org/d3-array.v2.min.js"></script>
 ```
@@ -48,11 +48,11 @@ height = 1500 - margin.top - margin.bottom
 Lastly, define `svg` as a SVG element with three attributes (class, width and height) and translate its the origin to the top-left corner of the chart area with a G element. 
 ```
 svg = d3.select('body').append('svg')
-      .attr("class", "chart")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
-      .append("g")
-      .attr("transform", "translate(${margin.left},${margin.top})")
+        .attr("class", "chart")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(${margin.left},${margin.top})")
 
 ```
 
@@ -71,6 +71,27 @@ DATA = await d3.csv(fileLocation, type)
 chartDate = new Date(2018,3,3)
 data = filterData(chartDate)
 
+```
+
+`type` is a function we wrote that takes in the data and converts the date strings into numeric notation. Overall, it just makes the data loading process much easier. 
+
+```
+function type(d) {
+  const formatDate = d3.timeParse('%Y%m%d')
+  d.date = formatDate(d.date)
+  return d
+}
+
+```
+
+`filterData` is also a function we wrote that takes in the data, iterates through it, counts how many games each team has won prior to the specified `chartDate`, and returns a new array with this information. 
+
+```
+function filterData(chartDate) {
+  const snapshot = DATA.filter(d => d.date <= chartDate)
+  const wins = d3.rollup(snapshot, v => v.length, d => d.team) 
+  return Array.from(wins, ([key, value]) => ({'team':key, 'value':value}))
+}
 ```
 
 ## Adding Graph Details 
@@ -162,7 +183,7 @@ svg.selectAll(".bar")
 Now we will add rectangles in each bar element with unique widths to display the total games won for each respective team. This is defined by `.attr("width", (d,i) => x(d.value))`: 
 ```
 rects = bar.append('rect')
-  .attr("width", (d,i) => x(d.value))
+  .attr("width", d => x(d.value))
   .attr("height", y.bandwidth())
   .style('fill', d => d3.interpolateRdYlBu(d.value/100))
 
@@ -219,16 +240,63 @@ let dateLabel = labels.append('text')
   .text(formatDate(chartDate))
 
 ```
-Based on the interval T we set up, we will update the bar chart dimensions: 
+Next, we will set up a variable T, which determines the time between each sorting transition in milliseconds. Every 300 milliseconds, the date label we set up above will change and update. We will also redefine the data based on the new date so we can get the cumulative games won prior to the new date. 
+
+```
+const T = 300
+let dailyUpdate = setInterval(function() {
+
+  chartDate = d3.timeDay.offset(chartDate,1)
+  dateLabel.transition().duration(T)
+      .text(formatDate(chartDate))
+  data = filterData(chartDate)
+
+```
+
+Based on the interval T we set up, we also need to update the graph's axes to make them responsive to the changing scores. For the x axis we are incrementing by 5s: 
+
+```
+(function changes)
+x.domain([0, Math.ceil(d3.max(data, d => d.value)/5)*5]);
+
+(visual changes)
+svg.select('.x.axis').transition().duration(T)
+    .call(xAxis);
+svg.select('.grid').transition().duration(T)
+    .call(gridlines);
+```
+
+For the y axis we are just rearranging the team names based on the new order:
+
+```
+y.domain(data.map(d => d.team).reverse());
+bar.transition().duration(T)
+    .attr("transform", d => `translate(0,${y(d.team)})`)
+```
+
+Next, we must also update each team's bar graph: 
 
 ```
 rects.data(data)
   .transition().duration(T)
   .attr("width", d => x(d.value))
   .style('fill', d => d3.interpolateRdYlBu(d.value/100))
+
+(0, 100) --> (red, blue) 
+as teams win more games they go from red to blue 
+
+```
+As well as the positioning of the images: 
+
+```
 imgs.data(data)
   .transition().duration(T)
     .attr('x', d => x(d.value) + 5)
+```
+
+And the label for the number of games won: 
+
+```
 barLabels.data(data)
   .transition().duration(T)
     .attr('x', d => x(d.value) + 10 + imgsize)
