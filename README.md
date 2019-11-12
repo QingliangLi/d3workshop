@@ -50,11 +50,11 @@ Lastly, define `svg` as a SVG element with three attributes (class, width and he
 
 ```javascript
 svg = d3.select('body').append('svg')
-        .attr("class", "chart")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-        .attr("transform", "translate(${margin.left},${margin.top})")
+    .attr("class", "chart")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(${margin.left},${margin.top})")
 
 ```
 
@@ -103,18 +103,18 @@ SVG stands for scalable vector graphics and up above, we defined and shifted our
 
 ```javascript
 svg.append("g")
-        .attr("class", "x axis")
-        .call(xAxis);
+    .attr("class", "x axis")
+    .call(xAxis);
 
 svg.append("g")
-        .attr("class", "y axis")
-        .call(yAxis);
+    .attr("class", "y axis")
+    .call(yAxis);
 
 xAxis = d3.axisTop(x)
-        .ticks(6)
+    .ticks(6)
 
 yAxis = d3.axisLeft(y)
-        .tickFormat('')
+    .tickFormat('')
 
 ```
 
@@ -124,13 +124,13 @@ In conjunction to the axes we want to add gridlines:
 
 ```javascript
 gridlines = d3.axisTop(x)
-        .ticks(6)
-        .tickSize(-height)
-        .tickFormat("")
+    .ticks(6)
+    .tickSize(-height)
+    .tickFormat("")
 
 svg.append("g")			
-          .attr("class", "grid")
-          .call(gridlines)
+    .attr("class", "grid")
+    .call(gridlines)
 
 ```
 
@@ -138,15 +138,15 @@ As well as labels:
 
 ```javascript
 labels = svg.append('g')
-        .attr('class', 'label')
+    .attr('class', 'label')
 
 xlabel = labels.append('text')
-        .attr('transform', `translate(${width},-40)`)
-        .text('Wins')
+    .attr('transform', `translate(${width},-40)`)
+    .text('Wins')
 
 ylabel = labels.append('text')
-        .attr('transform', 'translate(-80,${height/2}) rotate(-90)') 
-        .text('Teams')
+    .attr('transform', 'translate(-80,${height/2}) rotate(-90)') 
+    .text('Teams')
 
 ```
 
@@ -154,14 +154,14 @@ Besides these also need to define the FINISH THISSSS:
 
 ```javascript
 y = d3.scaleBand()
-        .range([height, 0])
-        .padding(0.33)
-        .domain(data.map(d => d.team).reverse());
+    .range([height, 0])
+    .padding(0.33)
+    .domain(data.map(d => d.team).reverse());
 
 
-  x = d3.scaleLinear()
-      .range([0, width]);
-      .domain([0, Math.ceil(d3.max(data, d => d.value)/5)*5])
+x = d3.scaleLinear()
+    .range([0, width]);
+    .domain([0, Math.ceil(d3.max(data, d => d.value)/5)*5])
 ```
 
 ### Individual team bar charts 
@@ -173,10 +173,10 @@ In D3, instead of telling D3 what to do, think of it as you are telling D3 what 
 
 ```javascript
 svg.selectAll(".bar")
-    .data(data)
-    .join("g")
-        .attr("class", "bar")
-        .attr("transform", d => `translate(0,${y(d.team)})`)
+  .data(data)
+  .join("g")
+    .attr("class", "bar")
+    .attr("transform", d => `translate(0,${y(d.team)})`)
 
 ```
 
@@ -186,8 +186,8 @@ Now we will add rectangles in each bar element with unique widths to display the
 
 ```javascript
 rects = bar.append('rect')
-        .attr("width", d => x(d.value))
-        .attr("height", y.bandwidth())
+    .attr("width", d => x(d.value))
+    .attr("height", y.bandwidth())
     .style('fill', d => d3.interpolateRdYlBu(d.value/100))
 
 ```
@@ -196,10 +196,10 @@ rects = bar.append('rect')
 Add labels to identify each team: 
 ```javascript
 bar.append('text')
-        .attr('class', 'team')
-        .attr('x', -10)
-        .attr('y', y.bandwidth()/2 + 5)
-        .text(d => d.team)
+    .attr('class', 'team')
+    .attr('x', -10)
+    .attr('y', y.bandwidth()/2 + 5)
+    .text(d => d.team)
 
 ```
 
@@ -208,12 +208,12 @@ As well as each team's logo:
 ```javascript
 const imgsize = 40
 imgs = bar.append("svg:image")
-        .attr('class', 'logo')
-        .attr('x', d => x(d.value) + 5)
-        .attr('y', -5)
-        .attr('width', imgsize)
-        .attr('height', imgsize)
-        .attr("xlink:href", d => `http://www.capsinfo.com/images/MLB_Team_Logos/${urls[d.team]}.png`)
+    .attr('class', 'logo')
+    .attr('x', d => x(d.value) + 5)
+    .attr('y', -5)
+    .attr('width', imgsize)
+    .attr('height', imgsize)
+    .attr("xlink:href", d => `http://www.capsinfo.com/images/MLB_Team_Logos/${urls[d.team]}.png`)
 
 ```
 
@@ -221,10 +221,10 @@ And lastly, a label for the number of games the team has won:
 
 ```javascript
 barLabels = bar.append('text')
-        .attr('class', 'barlabel')
-        .attr('x', d => x(d.value) + 10 + imgsize)
-        .attr('y', y.bandwidth()/2 + 5)
-        .text(d => d.value)
+    .attr('class', 'barlabel')
+    .attr('x', d => x(d.value) + 10 + imgsize)
+    .attr('y', y.bandwidth()/2 + 5)
+    .text(d => d.value)
 
 ```
 
@@ -238,9 +238,9 @@ Since we want to display the progression of wins over a period of time, we want 
 ```javascript
 const formatDate = d3.timeFormat('%b %-d, %Y')
 dateLabel = labels.append('text')
-        .attr('id', 'date')
-        .attr('transform', `translate(0,-40)`)
-        .text(formatDate(chartDate))
+    .attr('id', 'date')
+    .attr('transform', `translate(0,-40)`)
+    .text(formatDate(chartDate))
 ```
 
 Next, we will set up a variable T, which determines the time between each sorting transition in milliseconds. Every 300 milliseconds, the date label we set up above will change and update. We will also redefine the data based on the new date so we can get the cumulative games won prior to the new date. 
@@ -272,7 +272,7 @@ For the y axis we are just rearranging the team names based on the new order:
 ```javascript
 y.domain(data.map(d => d.team).reverse());
 bar.transition().duration(T)
-        .attr("transform", d => `translate(0,${y(d.team)})`)
+    .attr("transform", d => `translate(0,${y(d.team)})`)
 ```
 
 Next, we must also update each team's bar graph. 
@@ -281,9 +281,9 @@ As part of the animation, we include `.style('fill', d => d3.interpolateRdYlBu(d
 
 ```javascript
 rects.data(data)
-    .transition().duration(T)
-        .attr("width", d => x(d.value))
-        .style('fill', d => d3.interpolateRdYlBu(d.value/100))
+  .transition().duration(T)
+    .attr("width", d => x(d.value))
+    .style('fill', d => d3.interpolateRdYlBu(d.value/100))
 
 
 ```
@@ -291,18 +291,18 @@ As well as the positioning of the images:
 
 ```javascript
 imgs.data(data)
-    .transition().duration(T)
-        .attr('x', d => x(d.value) + 5)
+  .transition().duration(T)
+    .attr('x', d => x(d.value) + 5)
 ```
 
 And the label for the number of games won: 
 
 ```javascript
 barLabels.data(data)
-    .transition().duration(T)
-        .attr('x', d => x(d.value) + 10 + imgsize)
-        .attr('y', y.bandwidth()/2 + 5)
-        .text(d => d.value)
+  .transition().duration(T)
+    .attr('x', d => x(d.value) + 10 + imgsize)
+    .attr('y', y.bandwidth()/2 + 5)
+    .text(d => d.value)
 
 ```
 
