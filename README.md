@@ -1,6 +1,6 @@
 # D3 Workshop
 ## Introduction to D3
-D3 is a javascript library for manipulating documents based on data and is often used in conjunction with software tools like HTML, SVG, and CSS. Essentially, it links data with what appears on the screen allowing the user to explore the information interactively. 
+Data-Driven Documents (D3) is a javascript library for manipulating documents based on data and is often used in conjunction with tools like HTML, SVG, and CSS. Essentially, it links data with what appears on the screen allowing the user to explore the information interactively. 
 ### Key Components
 - #### HyperText Markup Language (HTML)
     - This is what web pages are made of and how you will ultimately present your information to the user. 
@@ -9,10 +9,12 @@ D3 is a javascript library for manipulating documents based on data and is often
 - #### Javascript 
     - This is the code contained inside the HTML that makes up the dynamically represented data you will create.  
 - #### Web Servers
-    - This will allow you to access your HTML files and provides the structure that allows it to be displayed on a web browser. You can either set up a local server or get access to a remote one.
+    - This will allow you to render your HTML files and provides the structure that allows it to be displayed on a web browser. You can either set up a local server or get access to a remote one.
 
 ## Getting Started
 The code we will be working with can be found at: https://github.com/caocscar/d3js-examples/tree/master/bar/sortable_timeseries
+
+The main files we will be working with are the index.html file, the sortable.js file, and the bar.css file. 
 
 
 ### Getting D3
@@ -277,7 +279,7 @@ bar.transition().duration(T)
 
 Next, we must also update each team's bar graph. 
 
-As part of the animation, we include `.style('fill', d => d3.interpolateRdYlBu(d.value/100))` which defines the number of games won by each team as a fraction between 0 and 1. As teams win more games, the bar will gradually change from red to yellow to blue: 
+As part of the animation, we include `.style('fill', d => d3.interpolateRdYlBu(d.value/100))` which defines the number of games won by each team as a fraction between 0 and 1. We will add a chromatic scheme to visually show as teams win more games, the bar will gradually change from red to yellow to blue:
 
 ```javascript
 rects.data(data)
@@ -287,7 +289,10 @@ rects.data(data)
 
 
 ```
-As well as the positioning of the images: 
+More information on chromatic schemes can be found here: 
+https://observablehq.com/@d3/color-schemes?collection=@d3/d3-scale-chromatic
+
+Update the positioning of the images: 
 
 ```javascript
 imgs.data(data)

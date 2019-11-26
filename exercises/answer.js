@@ -1,17 +1,17 @@
 // set the dimensions and margins of the graph
-var outerWidth = 650;
-var outerHeight = 300;
+var outerWidth = 960;
+var outerHeight = 500;
 
-var margin = {top: 20, right: 20, bottom: 70, left: 100},
-    width = outerWidth - margin.left - margin.right - 20,
+var margin = {top: 50, right: 20, bottom: 80, left: 80},
+    width = outerWidth - margin.left - margin.right,
     height = outerHeight - margin.top - margin.bottom;
 
 // set the ranges
-var x = d3.scaleLinear()
-    .range([0, width]);
-      
-var y = d3.scaleBand()
-    .range([height, 0])
+var y= d3.scaleLinear()
+    .range([height, 0]);
+    
+var x = d3.scaleBand()
+    .range([0, width])
     .padding(0.33);
 
 var xAxis = d3.axisTop(x)
@@ -39,9 +39,11 @@ var data = [{'team':'Boston','value':100},
 
 
 // scale the range of the data in the domains 
-x.domain([0, d3.max(data, d => d.value)])
-y.domain(data.map(d => d.team));
+y.domain([0, d3.max(data, d => d.value)])
+x.domain(data.map(d => d.team));
 
+
+var colors = ['#A6C0FE', '#B8B1E2', '#DA95AD', '#F39095', '#FED7BE']; 
 
 // append the rectangles for the bar chart
 var bar = svg.selectAll(".bar")
@@ -50,14 +52,14 @@ var bar = svg.selectAll(".bar")
         .attr("class","bar")
 
 
-var colors = ['#A6C0FE', '#B8B1E2', '#DA95AD', '#F39095', '#FED7BE']; 
+
 
 var rect = bar.append('rect')
-    .attr("width", d => x(d.value))
-    .attr("y", d => y(d.team))
-    .attr("height", y.bandwidth())
-
-    .attr("fill", function(d, i) { return colors[i]})
+    .attr("height", d => height - y(d.value))
+    .attr("x", d => x(d.team))
+    .attr("width", x.bandwidth())
+    .attr("y", d => y(d.value))
+    .attr("fill", function(d, i) { return colors[i]});
 
 // add the x Axis
 svg.append("g")
@@ -74,24 +76,18 @@ labels = svg.append('g')
 
 // x label
 labels.append('text')
-    .attr('transform', `translate(${width/2},250)`)
-    .text('Wins')
+    .attr('transform', `translate(${width/2},450)`)
+    .text('Teams')
 
 // y label
 ylabel = labels.append('text')
-    .attr('transform', `translate(-65,${height/2}) rotate(-90)`) 
-    .text('Teams')
+    .attr('transform', `translate(-45,${height/2}) rotate(-90)`) 
+    .text('Wins')
 
 barLabels = bar.append('text')
     .attr('class', 'barlabel')
-    .attr('x', d => x(d.value) - 30)
-    .attr('y', d => y(d.team) + (y.bandwidth()/2) + 4)
+    .attr('x', d => x(d.team) + (x.bandwidth()/2) - 14) 
+    .attr('y', d => y(d.value) - 20)
     .text(d => d.value)
     .style('fill', 'black')
-
-
-
-
-    
-
 
