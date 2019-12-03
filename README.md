@@ -65,7 +65,7 @@ Let us follow along with our code.
 
 First define the `margin` object with properties for the four sides:
 ```javascript
-margin = {top: 80, right: 90, bottom: 30+50, left: 120}
+let margin = {top: 80, right: 90, bottom: 30+50, left: 120}
 ```
 
 Next define `width` and `height`as the inner dimensions of the chart area: 
@@ -78,7 +78,7 @@ height = 1500 - margin.top - margin.bottom
 Lastly, define `svg` as a SVG element with three attributes (`class`, `width`, and `height`) and translate its origin to the top-left corner of the chart area with a `g` element. 
 
 ```javascript
-svg = d3.select('body').append('svg')
+let svg = d3.select('body').append('svg')
     .attr("class", "chart")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
@@ -98,8 +98,8 @@ const fileLocation = 'https://gist.githubusercontent.com/caocscar/8cdb75721ea4f6
 Next we will parse the file, convert it into an array of objects and filter it by date (using `filterData` function). I choose April 4th as the start date as every team has won at least one game by then (helping avoid some complications).
 ```javascript
 DATA = await d3.csv(fileLocation, type)
-chartDate = new Date(2018,3,3)
-data = filterData(chartDate)
+let chartDate = new Date(2018,3,3)
+let data = filterData(chartDate)
 ```
 **Note**: JavaScript starts month at index 0.
 
@@ -127,18 +127,19 @@ The function does some data wrangling for us.
 3. Returns the data in the desired format for us (an `Array` of JavaScript Objects).
 
 I could have done the data wrangling in another language like Python or R and created a different dataset to be read in but wanted to show you that D3 and JavaScript can also do similar things. Our data should look like this after being returned by filterData.
-[TODO] Add screenshot of data variable (30 element list)
+
+![data variable](img/data_variable.png)
 
 ## Setting up D3 scales
-[TODO] Besides these also need to define the FINISH THISSSS: 
+Besides these also need to define the scaling for the axes. Since we are making a horizontal bar chart, we will utilize two scale functions: `scaleLinear` and `scaleBand`. `scaleLinear` creates a linear mapping while `scaleBand` is specific for bar charts. It will split the range into n (number of teams) bands and compute the positions and widths of the bands. 
 
 ```javascript
-y = d3.scaleBand()
+let y = d3.scaleBand()
     .domain(data.map(d => d.team).reverse())
     .range([height, 0])
     .padding(0.33)
 
-x = d3.scaleLinear()
+let x = d3.scaleLinear()
     .domain([0, Math.ceil(d3.max(data, d => d.value)/5)*5])
     .range([0, width])
 ```
@@ -146,10 +147,10 @@ x = d3.scaleLinear()
 We append a group element to the already defined SVG element using `.append("g")`.
 
 ```javascript
-xAxis = d3.axisTop(x)
+let xAxis = d3.axisTop(x)
     .ticks(6)
 
-yAxis = d3.axisLeft(y)
+let yAxis = d3.axisLeft(y)
     .tickFormat('')
     
 svg.append("g")
@@ -164,7 +165,7 @@ svg.append("g")
 
 In addition to the axes, we want to add gridlines to the x-axis. 
 ```javascript
-gridlines = d3.axisTop(x)
+let gridlines = d3.axisTop(x)
     .ticks(6)
     .tickSize(-height)
     .tickFormat("")
@@ -179,7 +180,7 @@ As well as labels for the axes.
 labels = svg.append('g')
     .attr('class', 'label')
 
-xlabel = labels.append('text')
+labels.append('text')
     .attr('transform', `translate(${width},-40)`)
     .text('Wins')
 
@@ -216,7 +217,7 @@ Then for each `g` element:
 Now we will add rectangles to each bar element and set the bar width corresponding to the wins for each respective team. `.attr("width", d => x(d.value))`
 We style the bar using `.style('fill', d => d3.interpolateRdYlBu(d.value/100))` which defines the number of games won by each team as a fraction between 0 and 1. We will add a chromatic scheme to visually show as teams win more games, the bar will gradually change from red to yellow to blue.
 ```javascript
-rects = bar.append('rect')
+let rects = bar.append('rect')
     .attr("width", d => x(d.value))
     .attr("height", y.bandwidth())
     .style('fill', d => d3.interpolateRdYlBu(d.value/100))
@@ -238,7 +239,7 @@ bar.append('text')
 As well as logos for each team. 
 ```javascript
 const imgsize = 40
-imgs = bar.append("svg:image")
+let imgs = bar.append("svg:image")
     .attr('class', 'logo')
     .attr('x', d => x(d.value) + 5)
     .attr('y', -5)
@@ -249,7 +250,7 @@ imgs = bar.append("svg:image")
 
 And a label for the number of games the team has won.
 ```javascript
-barLabels = bar.append('text')
+let barLabels = bar.append('text')
     .attr('class', 'barlabel')
     .attr('x', d => x(d.value) + 10 + imgsize)
     .attr('y', y.bandwidth()/2 + 5)
@@ -260,18 +261,36 @@ barLabels = bar.append('text')
 And lastly, we add the date to display the time frame. 
 ```javascript
 const formatDate = d3.timeFormat('%b %-d, %Y')
-dateLabel = labels.append('text')
+let dateLabel = labels.append('text')
     .attr('id', 'date')
     .attr('transform', `translate(0,-40)`)
     .text(formatDate(chartDate))
 ```
 
 ## Exercise #1
-[TODO] Instructions
+Lets review what we've learned with an exercise. 
 
-### Animating the graph
+Go into the exercises folder in the code repository and open up simple.js. Upon running this on a server you should see: 
 
-In this example, the animation happens within HTML's `setInterval()` method.  The `setInterval()` method calls a function at specified intervals (in our case, `T`). Our function will perform one transition every interval.
+![Starting graph for exercise #1](img/start_code.png)
+
+Our goal is to transform this horizontal bar chart into a vertical bar chart with the number values outside of the bars. So, something like this: 
+
+![Ending graph for exercise #1](img/end_code.png)
+
+To approach this we can split it up into a couple steps: 
+
+1. Switching from a bar chart horiziontal to vertical is essentially changing the scaling of the axes. Try using scaleBand for x and scaleLinear for y and change the ranges appropriately. 
+
+2. Next we must switch the range of data in the domain. How should we do that?
+
+3. We also have to consider how the rectangles are appended. What is the new height and width? What is the new x and y? 
+
+4. Lastly position the bar labels accordingly. 
+
+## Animating the graph
+
+Now that we have an idea of how the graph set up and plotting works, we will dive into animation. Going back to our inital example, the animation happens within HTML's `setInterval()` method.  The `setInterval()` method calls a function at specified intervals (in our case, `T`). Our function will perform one transition every interval.
 
 For each transition, we need to do the following:
 - update the date 
@@ -340,6 +359,9 @@ Recall that the `bar` variable points to a group of `g` elements where we have g
 [TODO] Add blurb about exit function
 
 ## Exercise #2
+### Part A 
+For this exercise, we will start with the solution from Exercise #1. 
+### Part B 
 [TODO] Instructions
 
 ## References
