@@ -126,7 +126,7 @@ async function createChart() {
       .attr('x', 0)
       .attr('y', 0)
       .attr("width", width + margin.left + margin.right)
-      .attr("height", 0.4*height)    
+      .attr("height", 0.4*height)
 
   // sorting transition
   const T = 300
