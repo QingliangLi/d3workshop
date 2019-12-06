@@ -50,14 +50,13 @@ var bar = svg.selectAll(".bar")
         .attr("class","bar")
 
 
-var colors = ['#A6C0FE', '#B8B1E2', '#DA95AD', '#F39095', '#FED7BE']; 
 
 var rect = bar.append('rect')
     .attr("width", d => x(d.value))
     .attr("y", d => y(d.team))
     .attr("height", y.bandwidth())
 
-    .attr("fill", function(d, i) { return colors[i]})
+    .style('fill', d => d3.interpolatePurples(d.value/100))
 
 // add the x Axis
 svg.append("g")

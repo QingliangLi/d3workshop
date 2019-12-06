@@ -270,13 +270,13 @@ let dateLabel = labels.append('text')
 ## Exercise #1
 Lets review what we've learned with an exercise. 
 
-Go into the exercises folder in the code repository and open up simple.js. Upon running this on a server you should see: 
+Go into the exercise_1 folder in the code repository and open up exercise_1.js. Upon running this on a server you should see: 
 
-![Starting graph for exercise #1](img/start_code.png)
+![Starting graph for exercise #1](img/exercise1.png)
 
 Our goal is to transform this horizontal bar chart into a vertical bar chart with the number values outside of the bars. So, something like this: 
 
-![Ending graph for exercise #1](img/end_code.png)
+![Ending graph for exercise #1](img/exercise1_sol.png)
 
 To approach this we can split it up into a couple steps: 
 
@@ -354,15 +354,51 @@ bar.transition().duration(T)
 ```
 Recall that the `bar` variable points to a group of `g` elements where we have grouped a bunched of other elements together. This has the advantage of allowing us to make one call to move them all instead of multiple separate calls. These elements include the rectangle, team text, logo, and bar label. 
 
-[TODO] Add screenshot of `g` element with 4 nested elements.
+![g element with 4 nested elements](img/g_element.png)
 
-[TODO] Add blurb about exit function
+
+Lastly, we have to define an end function which basically stops the animation by using `clearInterval()` to clear the timer we set earlier with `setInterval()`.
+
+```javascript
+if (chartDate > new Date(2018,9,1)) {
+    clearInterval(dailyUpdate)
+}
+```
 
 ## Exercise #2
-### Part A 
 For this exercise, we will start with the solution from Exercise #1. 
-### Part B 
-[TODO] Instructions
+
+Go into exercise_2 and open up exercise_2.js. 
+
+Our goal is to add two buttons to the graph. One is a "Sort Alphabetically" button which upon clicking, will reload the graph sorted alphabetically. Another is a "Sort Numerically" button which will reload the graph sorted numerically (ascending). 
+
+Sort alphabetically: 
+![Sorted alphabetically](img/alphabetically.png)
+
+Sort numerically: 
+![Sorted numerically](img/numerically.png)
+
+
+We will need to update both the HTML as well as the JS. Here are some hints: 
+
+*Hint*: Add code to the HTML to create two buttons and define each such that when clicked, a function we will create runs. 
+
+*Hint*: Create the functions. The function should do 3 things:  
+1. Sort the data 
+2. Define the new order of teams and recall the axis to update the graph's x axis 
+3. Reassign the values to update the height and the labels of the graph 
+
+
+## Exercise #3
+For our last exercise, we will animate the sorting in exercise #2. 
+
+Although this may sound hard, it is actually quite simple. All you have to do is define a time duration for the animation to occur and add a transition to each moving part of the graph (rectangles, x axis and bar labels). 
+
 
 ## References
-[TODO] Add D3 references
+
+https://bost.ocks.org/mike/ : D3 creator, Mike Bostock's blog.
+
+https://bl.ocks.org/ :D3 example code  
+
+https://leanpub.com/d3-t-and-t-v4/read :D3 V4 book to understand basics.

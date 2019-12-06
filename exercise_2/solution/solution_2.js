@@ -7,12 +7,13 @@ var margin = {top: 50, right: 20, bottom: 80, left: 80},
     height = outerHeight - margin.top - margin.bottom;
 
 // set the ranges
-var y= d3.scaleLinear()
-    .range([height, 0]);
-    
 var x = d3.scaleBand()
     .range([0, width])
     .padding(0.33);
+
+var y= d3.scaleLinear()
+    .range([height, 0]);
+    
 
 var xAxis = d3.axisTop(x)
     .ticks(5)
@@ -39,11 +40,9 @@ var data = [{'team':'Boston','value':100},
 
 
 // scale the range of the data in the domains 
-y.domain([0, d3.max(data, d => d.value)])
 x.domain(data.map(d => d.team));
+y.domain([0, d3.max(data, d => d.value)])
 
-
-var colors = ['#A6C0FE', '#B8B1E2', '#DA95AD', '#F39095', '#FED7BE']; 
 
 // append the rectangles for the bar chart
 var bar = svg.selectAll(".bar")
@@ -57,7 +56,7 @@ var rect = bar.append('rect')
     .attr("x", d => x(d.team))
     .attr("width", x.bandwidth())
     .attr("y", d => y(d.value))
-    .attr("fill", function(d, i) { return colors[i]});
+    .style('fill', d => d3.interpolatePurples(d.value/100));
 
 
 // add the x Axis

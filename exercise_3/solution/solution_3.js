@@ -43,8 +43,6 @@ y.domain([0, d3.max(data, d => d.value)])
 x.domain(data.map(d => d.team));
 
 
-var colors = ['#A6C0FE', '#B8B1E2', '#DA95AD', '#F39095', '#FED7BE']; 
-
 // append the rectangles for the bar chart
 var bar = svg.selectAll(".bar")
     .data(data)
@@ -57,7 +55,7 @@ var rect = bar.append('rect')
     .attr("x", d => x(d.team))
     .attr("width", x.bandwidth())
     .attr("y", d => y(d.value))
-    .attr("fill", function(d, i) { return colors[i]});
+    .style('fill', d => d3.interpolatePurples(d.value/100));
 
 
 // add the x Axis
@@ -95,8 +93,7 @@ barLabels = bar.append('text')
 function updateAlpha() { 
     const T = 500
 
-    data.sort((a,b) => d3.ascending(a.team, b.team))
-    x.domain(data.map(d => d.team));
+    x.domain((data.map(d => d.team)).sort());
 
     bar.selectAll('rect')
       .transition().duration(T)
@@ -116,7 +113,8 @@ function updateAlpha() {
 function updateNum() { 
     const T = 500
 
-    data.sort((a,b) => d3.ascending(a.value, b.value))
+    data.sort((a,b) => d3.ascending(a.value, b.value));
+
     x.domain(data.map(d => d.team));
 
     bar.selectAll('rect')
