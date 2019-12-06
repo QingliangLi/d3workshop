@@ -57,7 +57,7 @@ async function createChart() {
   // set up bar groups
   let bar = svg.selectAll(".bar")
     .data(data)
-    .join("g")
+    .join("g") // equivalent to .enter().append('g')
       .attr("class", "bar")
       .attr("transform", d => `translate(0,${y(d.team)})`)
 
