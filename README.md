@@ -10,14 +10,14 @@
   - [Reading in Data](#reading-in-data)
 - [Setting up D3 scales](#setting-up-d3-scales)
 - [Adding axes](#adding-axes)
-  - [Individual team bar charts](#individual-team-bar-charts)
+- [Individual team bar charts](#individual-team-bar-charts)
 - [Exercise #1](#exercise-1)
 - [Animating the graph](#animating-the-graph)
 - [Exercise #2](#exercise-2)
 - [Exercise #3](#exercise-3)
 - [References](#references)
 ## Introduction to D3
-D3 (Data-Driven Documents or D3.js) is a javascript library for manipulating documents based on data and is used in conjunction with tools like HTML, SVG, and CSS. It's used by the New York Times to make interactive custom graphics for its news articles.
+D3 (Data-Driven Documents or D3.js) is a javascript library for manipulating documents based on data and is used in conjunction with tools like HTML, SVG, and CSS. It's used by the New York Times to make interactive custom graphics for its [news](https://www.nytimes.com/interactive/2019/11/06/us/politics/elizabeth-warren-policies-taxes.html) [articles](https://www.nytimes.com/interactive/2018/03/27/upshot/make-your-own-mobility-animation.html).
 
 ### Key Components
 - HTML (HyperText Markup Language)
@@ -209,7 +209,7 @@ ylabel = labels.append('text')
     .text('Teams')
 ```
 
-### Individual team bar charts 
+## Individual team bar charts 
 Next, we will start displaying our data on the graph. Ultimately, we want to show the progression of total games won for each baseball game over a period of time. Each team will be represented by a bar, text, logo and a label.
 
 To set up the teams, we must first create groups to contain the collective information for each team. 
@@ -335,7 +335,6 @@ data = filterData(chartDate)
 We also need to update the graph's axes to make them responsive to the changing scores. We do this by updating the `x.domain` and then re-calling the `xAxis` and `gridlines` variables which are dependent on the variable `x`. 
 
 For the x-axis, we are incrementing the scale by fives (arbitrary). D3 also has a `.nice()` method which you can add to let D3 choose a "nice" limit for you.
-
 ```javascript
 x.domain([0, Math.ceil(d3.max(data, d => d.value)/5)*5]);
 svg.select('.x.axis').transition().duration(T)
@@ -370,12 +369,9 @@ bar.transition().duration(T)
     .attr("transform", d => `translate(0,${y(d.team)})`)
 ```
 Recall that the `bar` variable points to a group of `g` elements where we have grouped a bunched of other elements together. This has the advantage of allowing us to make one call to move them all instead of multiple separate calls. These elements include the rectangle, team text, logo, and bar label. 
-
 ![g element with 4 nested elements](img/g_element.png)
 
-
-Lastly, we have to define an end function which basically stops the animation by using `clearInterval()` to clear the timer we set earlier with `setInterval()`.
-
+Lastly, we have to define an `if` statement to check if its the end of the season so we can stop the forever loop using `clearInterval()` to clear the timer we set earlier with `setInterval()`.
 ```javascript
 if (chartDate > new Date(2018,9,1)) {
     clearInterval(dailyUpdate)
@@ -383,7 +379,7 @@ if (chartDate > new Date(2018,9,1)) {
 ```
 
 ## Exercise #2
-We will start with the solution from Exercise #1 (or from your solution is also fine). 
+We will start with the solution from Exercise #1. 
 
 Go into folder `exercise_2` and open up `index.html` and `exercise_2.js`. 
 
@@ -427,12 +423,12 @@ svg.select(".xaxis") ...
 bar.selectAll('rect') ...
 bar.selectAll('.barlabel') ...
 ```
-If you can get this, then adding the other sort option should be more straightforward. 
+If you can get this, then adding the other sort option should be more straightforward. If you get this working, try changing the dataset to see if it still works.
 
 ## Exercise #3
-For our last exercise, we will animate the sorting in exercise #2. 
+For our last exercise, we will animate the sorting in exercise #2. Recall, we just did some stop-motion animation in exercise #2 (albeit two frames).
 
-Although this may sound hard, it is actually quite simple. All you have to do is define a time duration for the animation to occur and add a transition to each moving part of the graph (rectangles, x-axis and bar labels).
+Although this may sound hard, it is actually quite simple. All you have to do is add a `transition` to each moving part of the graph (rectangles, x-axis and bar labels) and define a time `duration` for the animation to occur.
 
 ## References
 Mike Bostock's blog (creator of D3.js)  
@@ -447,7 +443,7 @@ https://bl.ocks.org/
 Another gallery of simple D3.js examples  
 https://www.d3-graph-gallery.com/index.html
 
-D3.js e-book to understand basics (they have books for v3, v4, and v5). It has line by line breakdown of code.
+D3.js e-book to understand basics (they have books for v3, v4, and v5). It has line-by-line breakdown of code.
 https://leanpub.com/d3-t-and-t-v5 
 
 Alex's Sandbox of D3.js Examples  
