@@ -83,7 +83,7 @@ ylabel = labels.append('text')
 
 barLabels = bar.append('text')
     .attr('class', 'barlabel')
-    .attr('x', d => x(d.value) - 30)
+    .attr('x', d => x(d.value) - 20)
     .attr('y', d => y(d.team) + (y.bandwidth()/2) + 4)
     .text(d => d.value)
     .style('fill', 'black')
