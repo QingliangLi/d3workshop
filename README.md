@@ -1,6 +1,24 @@
-# D3 Workshop
+# D3.js Workshop <!-- omit in toc -->
+- [Introduction to D3](#introduction-to-d3)
+  - [Key Components](#key-components)
+- [Getting Started](#getting-started)
+- [Running D3 Locally](#running-d3-locally)
+  - [Getting D3](#getting-d3)
+    - [Version Note](#version-note)
+  - [HTML setup](#html-setup)
+  - [Graph setup](#graph-setup)
+  - [Reading in Data](#reading-in-data)
+- [Setting up D3 scales](#setting-up-d3-scales)
+- [Adding axes](#adding-axes)
+- [Individual team bar charts](#individual-team-bar-charts)
+- [Exercise #1](#exercise-1)
+- [Animating the graph](#animating-the-graph)
+- [Exercise #2](#exercise-2)
+- [Exercise #3](#exercise-3)
+- [References](#references)
 ## Introduction to D3
-D3 (Data-Driven Documents or D3.js) is a javascript library for manipulating documents based on data and is used in conjunction with tools like HTML, SVG, and CSS. 
+D3 (Data-Driven Documents or D3.js) is a javascript library for manipulating documents based on data and is used in conjunction with tools like HTML, SVG, and CSS. It's used by the New York Times to make interactive custom graphics for its [news](https://www.nytimes.com/interactive/2019/11/06/us/politics/elizabeth-warren-policies-taxes.html) [articles](https://www.nytimes.com/interactive/2018/03/27/upshot/make-your-own-mobility-animation.html).
+
 ### Key Components
 - HTML (HyperText Markup Language)
   - standard markup language for webpages
@@ -16,31 +34,30 @@ D3 (Data-Driven Documents or D3.js) is a javascript library for manipulating doc
 - Web Server
 
 ## Getting Started
-The code repository we will be working with can be found at: https://github.com/caocscar/d3js-examples/tree/master/bar/sortable_timeseries
+Download the files from the Github repo or the Box link provided in the workshop. The main files we will be working with are `index.html`, `sortable.js`, and `bar.css`. 
 
-The main files we will be working with are `index.html`, `sortable.js`, and `bar.css`. 
-
-**Note**: I have other D3 examples in the github repo for those curious.
-
-## Running Example Locally
-To run D3 locally on your PC, you need to set up a web server. Fortunately, Python makes this relatively easy. Open a terminal that has access to Python and run a simple http server with the command `python -m http.server <port number>`. The port number is optional (default is 8000). Then open your browser and go to `localhost:8000` or `127.0.0.1:8000`. You should be able to see the example now.
+## Running D3 Locally
+To run D3 locally on your PC, you need to set up a web server. Fortunately, Python makes this relatively easy. Open a terminal (i.e. Anaconda Prompt) that has access to Python and run a simple http server with the command `python -m http.server <port number>`. The port number is optional (default is 8000). Then open your browser and go to `localhost:8000` or `127.0.0.1:8000`. You should be able to run the D3 example locally.
 
 ### Getting D3
-To use D3, we must load the d3.js library into our HTML file from the CDN with the following code: 
-
+To use D3, we must load the d3.js library from a CDN with the following snippet.
 ```html
 <script src="https://d3js.org/d3.v5.min.js"></script>
 ```
-We'll also use the d3-array library to do some data wrangling to get the data in the right format:
+
+We'll also use the d3-array library to do some data wrangling to get the data in the right format.
 ```html
 <script src="https://d3js.org/d3-array.v2.min.js"></script>
 ```
 
-### Graph setup
+#### Version Note
+We're using D3 version 5. Most of the online v5 examples are written using something called [Observable notebooks](https://observablehq.com/) (think of it like Jupyter Notebooks for JavaScript). The syntax for Observable notebooks is slightly different than what you would use for HTML. Most of the other examples on the web are for v3 or v4. Ideally, you'll want to look for examples using v4 or v5 on the web. There were some breaking changes made in the conversion from v3 to v4. Its not impossible to figure out from v3 examples but its just more errors to debug.
+
+### HTML setup
 Let's take a quick peek at our HTML file. Its pretty bare bones. The things to note are:
-- we load two JavaScript files `urls.js` and `sortable.js`
-- we load one CSS file `bar.css`
-- we make a JavaScript call to a function `createChart()` which will render our chart for us inside the body tag.
+- loading two JavaScript files `urls.js` and `sortable.js`
+- loading one CSS file `bar.css`
+- one function call `createChart()` which will create our chart for us within the `<body>` tag
   
 ```html
 <!DOCTYPE html>
@@ -58,8 +75,10 @@ Let's take a quick peek at our HTML file. Its pretty bare bones. The things to n
 </body>
 </html>
 ```
+This is what you would see if you right-click *View page source <kbd>Ctrl+U</kbd>*. Note that this is different than what you would see if you inspected the Elements tab in Chrome using your browser.
 
-Now, we will start working with our JavaScript file `sortable.js` and create the function `createChart`. We need to first set up our graph. We start by specifying the dimension and margins of our graph. The standard D3 convention for setting up margins can be found at: https://bl.ocks.org/mbostock/3019563 
+### Graph setup
+Now, let's move onto our JavaScript file `sortable.js` and create the function `createChart` that we're going to call. We need to first set up our graph. We start by specifying the dimensions and margins of our graph. The standard D3 convention for setting up margins can be found at https://bl.ocks.org/mbostock/3019563 
 
 Let us follow along with our code. 
 
@@ -69,14 +88,12 @@ let margin = {top: 80, right: 90, bottom: 30+50, left: 120}
 ```
 
 Next define `width` and `height`as the inner dimensions of the chart area: 
-
 ```javascript
 width = 900 - margin.left - margin.right
 height = 1500 - margin.top - margin.bottom
 ```
 
-Lastly, define `svg` as a SVG element with three attributes (`class`, `width`, and `height`) and translate its origin to the top-left corner of the chart area with a `g` element. 
-
+Lastly, define a `svg` element with three attributes (`class`, `width`, and `height`) and translate its origin to the top-left corner of the chart area with a `g` element.
 ```javascript
 let svg = d3.select('body').append('svg')
     .attr("class", "chart")
@@ -85,17 +102,23 @@ let svg = d3.select('body').append('svg')
   .append("g")
     .attr("transform", "translate(${margin.left},${margin.top})")
 ```
-**Note**: There is a D3 distinction between a 2 space and 4 space indentation.
+Let's breakdown what this D3 code block is doing.
+- The first line selects the `<body>` tag in the HTML and appends (or nests) a `svg` element within the `<body>` element.
+- The next three lines define attributes for the `svg` element.
+- The second-to-last line appends a `g` element to `svg`.
+- The last line applies a transformation (a translation) to the `g` element.
 
-### Loading in Data
-Now that the graphing area has been created, we need to load in our data. We will be looking at the 2018 baseball season and the accumulation of wins by each team.
+**Note**: There is a D3 distinction between a 2 space and 4 space indentation. Two space indentation means you are returning a new selection and 4 space indentation means working with an existing selection. Don't worry if that means nothing to you at the moment. Just know that its intentional. [REFERENCE NEEDED]
 
-The data resides in a Github gist. There is also a copy in our folder but I wanted to show you how to read from a url.
+### Reading in Data
+We will be looking at data from Major League Baseball 2018 season and the accumulation of wins by each team as the season progresses.
 
+The data resides in a Github gist. There is also a copy in our folder but I wanted to show you that you can also read files from the web.
 ```javascript
 const fileLocation = 'https://gist.githubusercontent.com/caocscar/8cdb75721ea4f6c8a032a00ebc73516c/raw/854bbee2faffb4f6947b6b6c2424b18ca5a8970e/mlb2018.csv'
 ```
-Next we will parse the file, convert it into an array of objects and filter it by date (using `filterData` function). I choose April 4th as the start date as every team has won at least one game by then (helping avoid some complications).
+
+Next we will read the file, parse it, convert it into an array of objects (line 1) and filter it by date using our custom `filterData` function (lines 2 & 3). I chose April 4th as the start date as every team has won at least one game by then (helping avoid some other complications with adding teams dynamically).
 ```javascript
 DATA = await d3.csv(fileLocation, type)
 let chartDate = new Date(2018,3,3)
@@ -103,7 +126,7 @@ let data = filterData(chartDate)
 ```
 **Note**: JavaScript starts month at index 0.
 
-`type` is a function that takes in the data and parses the date strings into a JavaScript Date format.  
+The function `type` takes in the data and parses the date strings into a JavaScript `Date` format. You can think of `d` as a row of the data.
 ```javascript
 function type(d) {
   const formatDate = d3.timeParse('%Y%m%d')
@@ -111,9 +134,9 @@ function type(d) {
   return d
 }
 ```
-**Note**: `d3.csv` reads in all columns as strings and you usually convert them to numeric in the `type` function. There is a `d3.autoType` function which is also available to do automatic conversions.
+**Note**: `d3.csv` reads in all columns as strings and you usually convert them to numeric using a `type` function. There is a `d3.autoType` function which is also available to do automatic conversions.
 
-Here is the `filterData` function mentioned above. 
+The `filterData` function filters the data up to the given date. Here I'm using arrow `=>` functions for brevity. They are similar to `lambda` functions in Python.
 ```javascript
 function filterData(chartDate) {
   const snapshot = DATA.filter(d => d.date <= chartDate)
@@ -122,17 +145,15 @@ function filterData(chartDate) {
 }
 ```
 The function does some data wrangling for us.
-1. Filters the data by date.
-2. Performs a groupby operation by team and counts how many times they appear (or win) in the data.
-3. Returns the data in the desired format for us (an `Array` of JavaScript Objects).
+1. Filters the data by date  `DATA.filter(d => d.date <= chartDate)`.
+2. Performs a groupby operation by team and counts how many times they appear (or win) in the data `d3.rollup(snapshot, v => v.length, d => d.team)`.
+3. Returns the data in the desired format for us (an `Array` of JavaScript Objects) `Array.from(wins, ([key, value]) => ({'team':key, 'value':value}))`.
 
-I could have done the data wrangling in another language like Python or R and created a different dataset to be read in but wanted to show you that D3 and JavaScript can also do similar things. Our data should look like this after being returned by filterData.
-
+I could have done the data wrangling in another language like Python or R and created a different dataset to be read in but wanted to show you that D3 and JavaScript can also do similar things. Our data should look like this after being returned by `filterData`.
 ![data variable](img/data_variable.png)
 
 ## Setting up D3 scales
-Besides these also need to define the scaling for the axes. Since we are making a horizontal bar chart, we will utilize two scale functions: `scaleLinear` and `scaleBand`. `scaleLinear` creates a linear mapping while `scaleBand` is specific for bar charts. It will split the range into n (number of teams) bands and compute the positions and widths of the bands. 
-
+Since we are making a horizontal bar chart, we will utilize two scale functions: `scaleLinear` and `scaleBand`. `scaleLinear` creates a linear mapping while `scaleBand` is a mapping specific for bar charts. It will split the range into n (number of teams) bands and compute the positions and widths of the bands. 
 ```javascript
 let y = d3.scaleBand()
     .domain(data.map(d => d.team).reverse())
@@ -144,26 +165,25 @@ let x = d3.scaleLinear()
     .range([0, width])
 ```
 ## Adding axes
-We append a group element to the already defined SVG element using `.append("g")`.
-
+We define our axis properties. Here it's the scale we want to use `x`, orientation `axisTop()` and approximately how many ticks it should display `ticks(6)`. We append another group element to the already defined `svg` variable using `.append("g")`, assign two classes `x axis` and then call the axis generator `xAxis` to draw it with the specified arguments. Similarly for the y-axis.
 ```javascript
 let xAxis = d3.axisTop(x)
     .ticks(6)
 
+svg.append("g")
+    .attr("class", "x axis")
+    .call(xAxis);
+    
 let yAxis = d3.axisLeft(y)
     .tickFormat('')
     
 svg.append("g")
-    .attr("class", "x axis")
-    .call(xAxis);
-
-svg.append("g")
     .attr("class", "y axis")
     .call(yAxis);
 ```
-![Create X-axis](img/create_x_axis.png)
+![create x-axis](img/create_x_axis.png)
 
-In addition to the axes, we want to add gridlines to the x-axis. 
+In addition to the axes, we want to add gridlines to the x-axis. Gridlines are coded very similarly to axes.
 ```javascript
 let gridlines = d3.axisTop(x)
     .ticks(6)
@@ -175,7 +195,7 @@ svg.append("g")
     .call(gridlines)
 ```
 
-As well as labels for the axes. 
+Let's add axes labels now. 
 ```javascript
 labels = svg.append('g')
     .attr('class', 'label')
@@ -189,33 +209,33 @@ ylabel = labels.append('text')
     .text('Teams')
 ```
 
-### Individual team bar charts 
-Next we will start displaying our data in the graph. Ultimately, we want to show the progression of total games won for each baseball game over a period of time. Each team will be represented by a bar. 
+## Individual team bar charts 
+Next, we will start displaying our data on the graph. Ultimately, we want to show the progression of total games won for each baseball game over a period of time. Each team will be represented by a bar, text, logo and a label.
 
-To set up the groups, we must first create bars to contain the collective information for each team. 
+To set up the teams, we must first create groups to contain the collective information for each team. 
 
-In D3, instead of telling D3 what to do, think of it as you are telling D3 what you want. The following piece of code constructs bars for each of the teams.
-
+In D3, instead of telling D3 what to do, think of it as you are telling D3 what you want. The following piece of code constructs groups for each of the teams.
 ```javascript
 let bar = svg.selectAll(".bar")
   .data(data)
-  .join("g")
+  .join("g") // equivalent to .enter().append('g')
     .attr("class", "bar")
     .attr("transform", d => `translate(0,${y(d.team)})`)
 ```
 Here's a breakdown of the above code block:
-- `svg.selectAll(".bar)` says you want to select all element of type class bar (even if they don't exist at the start)
-- `.data(data)` binds the data to the D3 selection
-- `.join(g)` creates `g` elements for each data point (i.e. team)
+- `svg.selectAll(".bar)` says you want to select all element of type `class="bar"` (even if they don't exist at the beginning)
+- `.data(data)` binds the data to this empty D3 selection
+- `.join(g)` creates `g` elements for each row of data (i.e. team)
 
 Then for each `g` element:
 - `.attr('class', 'bar')` assigns `class="bar"`
 - `.attr("transform", d => 'translate(0,${y(d.team)})')` assigns a transformation (x,y)
-
 ![Create bar element](img/create_bar_element.png)
 
-Now we will add rectangles to each bar element and set the bar width corresponding to the wins for each respective team. `.attr("width", d => x(d.value))`
-We style the bar using `.style('fill', d => d3.interpolateRdYlBu(d.value/100))` which defines the number of games won by each team as a fraction between 0 and 1. We will add a chromatic scheme to visually show as teams win more games, the bar will gradually change from red to yellow to blue.
+**Note**: Data joins in D3 are probably one of the more harder concepts to grasp. Here is Mike Bostock's blog on [joins](https://bost.ocks.org/mike/join/) and [selections](https://bost.ocks.org/mike/selection/).
+
+Now we will add rectangles to each bar element and set the bar width corresponding to the wins for each respective team `.attr("width", d => x(d.value))`.
+We style the bar using `.style('fill', d => d3.interpolateRdYlBu(d.value/100))` which defines the number of games won by each team as a fraction between 0 and 1. We will add a color scheme to visually encode the number of wins (the bars will gradually change from red to yellow to blue as teams win more games). Its really not needed for the graph but I wanted to show you how to do it.
 ```javascript
 let rects = bar.append('rect')
     .attr("width", d => x(d.value))
@@ -268,25 +288,22 @@ let dateLabel = labels.append('text')
 ```
 
 ## Exercise #1
-Lets review what we've learned with an exercise. 
+Lets try to apply what we've learned so far with an exercise. 
 
-Go into the exercise_1 folder in the code repository and open up exercise_1.js. Upon running this on a server you should see: 
-
+Go into the `exercise_1` folder and open up `exercise_1.js`. Change the url to `localhost:8000/exercise_1`. You should see a horizontal bar chart. 
 ![Starting graph for exercise #1](img/exercise1.png)
 
-Our goal is to transform this horizontal bar chart into a vertical bar chart with the number values outside of the bars. So, something like this: 
-
+The goal of the exercise is to transform this horizontal bar chart into a vertical bar chart with the labels on the outside of the bars.
 ![Ending graph for exercise #1](img/exercise1_sol.png)
 
-To approach this we can split it up into a couple steps: 
+To approach this,  we can split it up into a couple steps: 
+1. Switching from a bar chart horiziontal to vertical is essentially changing the scaling of the axes. Try using `scaleBand` for x and `scaleLinear` for y and change the `range` appropriately. 
 
-1. Switching from a bar chart horiziontal to vertical is essentially changing the scaling of the axes. Try using scaleBand for x and scaleLinear for y and change the ranges appropriately. 
+2. We must switch the range of data in the `domain`. How should we do that?
 
-2. Next we must switch the range of data in the domain. How should we do that?
+3. We also have to consider how the rectangles were specified. What is the new `height` and `width`? What is the new `x` and `y`? 
 
-3. We also have to consider how the rectangles are appended. What is the new height and width? What is the new x and y? 
-
-4. Lastly position the bar labels accordingly. 
+4. Position the bar labels accordingly.
 
 ## Animating the graph
 
@@ -318,7 +335,6 @@ data = filterData(chartDate)
 We also need to update the graph's axes to make them responsive to the changing scores. We do this by updating the `x.domain` and then re-calling the `xAxis` and `gridlines` variables which are dependent on the variable `x`. 
 
 For the x-axis, we are incrementing the scale by fives (arbitrary). D3 also has a `.nice()` method which you can add to let D3 choose a "nice" limit for you.
-
 ```javascript
 x.domain([0, Math.ceil(d3.max(data, d => d.value)/5)*5]);
 svg.select('.x.axis').transition().duration(T)
@@ -353,12 +369,9 @@ bar.transition().duration(T)
     .attr("transform", d => `translate(0,${y(d.team)})`)
 ```
 Recall that the `bar` variable points to a group of `g` elements where we have grouped a bunched of other elements together. This has the advantage of allowing us to make one call to move them all instead of multiple separate calls. These elements include the rectangle, team text, logo, and bar label. 
-
 ![g element with 4 nested elements](img/g_element.png)
 
-
-Lastly, we have to define an end function which basically stops the animation by using `clearInterval()` to clear the timer we set earlier with `setInterval()`.
-
+Lastly, we have to define an `if` statement to check if its the end of the season so we can stop the forever loop using `clearInterval()` to clear the timer we set earlier with `setInterval()`.
 ```javascript
 if (chartDate > new Date(2018,9,1)) {
     clearInterval(dailyUpdate)
@@ -366,11 +379,11 @@ if (chartDate > new Date(2018,9,1)) {
 ```
 
 ## Exercise #2
-For this exercise, we will start with the solution from Exercise #1. 
+We will start with the solution from Exercise #1. 
 
-Go into exercise_2 and open up exercise_2.js. 
+Go into folder `exercise_2` and open up `index.html` and `exercise_2.js`. 
 
-Our goal is to add two buttons to the graph. One is a "Sort Alphabetically" button which upon clicking, will reload the graph sorted alphabetically. Another is a "Sort Numerically" button which will reload the graph sorted numerically (ascending). 
+Our goal is to add sorting to our graph. We want to be able to sort alphabetically and numerically with a click of a button. 
 
 Sort alphabetically: 
 ![Sorted alphabetically](img/alphabetically.png)
@@ -378,27 +391,60 @@ Sort alphabetically:
 Sort numerically: 
 ![Sorted numerically](img/numerically.png)
 
+We will need to update both the HTML as well as the JavaScript. Here are some hints.
 
-We will need to update both the HTML as well as the JS. Here are some hints: 
-
-*Hint*: Add code to the HTML to create two buttons and define each such that when clicked, a function we will create runs. 
-
-*Hint*: Create the functions. The function should do 3 things:  
-1. Sort the data 
-2. Define the new order of teams and recall the axis to update the graph's x axis 
+Add this HTML snippet to the body of `index.html` to add two buttons 
+```html
+<div id="option1">
+    <input name="alpabeticalButton" 
+            type="button" 
+            value="Sort Alphabetically" 
+            onclick="updateAlpha()" />
+</div>
+<div id="option2">
+    <input name="numericalButton" 
+            type="button" 
+            value="Sort Numerically" 
+            onclick="updateNum()" />
+</div>
+```
+*Hint*: Create the function `updateAlpha()`. The function should do 3 things:  
+1. Sort the data. To do a sort with D3, you would write something like this `data.sort((a,b) => d3.ascending(a.COLUMN, b.COLUMN))`
+where COLUMN is the name of your key or column
+2. Define the new order of teams and call the axis generator again to update the graph's x-axis.
+```javascript
+// I've started the solution for you. 
+// You just need to finish it (ellipses indicate where)
+x.domain(...)
+svg.select(".xaxis") ...
+```
 3. Reassign the values to update the height and the labels of the graph 
-
+```javascript
+bar.selectAll('rect') ...
+bar.selectAll('.barlabel') ...
+```
+If you can get this, then adding the other sort option should be more straightforward. If you get this working, try changing the dataset to see if it still works.
 
 ## Exercise #3
-For our last exercise, we will animate the sorting in exercise #2. 
+For our last exercise, we will animate the sorting in exercise #2. Recall, we just did some stop-motion animation in exercise #2 (albeit two frames).
 
-Although this may sound hard, it is actually quite simple. All you have to do is define a time duration for the animation to occur and add a transition to each moving part of the graph (rectangles, x axis and bar labels). 
-
+Although this may sound hard, it is actually quite simple. All you have to do is add a `transition` to each moving part of the graph (rectangles, x-axis and bar labels) and define a time `duration` for the animation to occur.
 
 ## References
+Mike Bostock's blog (creator of D3.js)  
+https://bost.ocks.org/mike/
 
-https://bost.ocks.org/mike/ : D3 creator, Mike Bostock's blog.
+A beginner's tutorial to D3.js by Mike Bostock
+https://bost.ocks.org/mike/circles/
 
-https://bl.ocks.org/ :D3 example code  
+Gallery of D3.js examples  
+https://bl.ocks.org/   
 
-https://leanpub.com/d3-t-and-t-v4/read :D3 V4 book to understand basics.
+Another gallery of simple D3.js examples  
+https://www.d3-graph-gallery.com/index.html
+
+D3.js e-book to understand basics (they have books for v3, v4, and v5). It has line-by-line breakdown of code.
+https://leanpub.com/d3-t-and-t-v5 
+
+Alex's Sandbox of D3.js Examples  
+https://github.com/caocscar/d3js-examples
