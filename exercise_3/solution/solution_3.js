@@ -127,7 +127,7 @@ function updateNum() {
 
     bar.selectAll('.barlabel')
       .transition().duration(T)
-        .attr('x', d => x(d.team) + (x.bandwidth()/2) - 14) 
+        .attr('x', d => x(d.team) + (x.bandwidth()/2)) 
 
 }
 
