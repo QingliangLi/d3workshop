@@ -15,6 +15,7 @@
 - [Animating the graph](#animating-the-graph)
 - [Exercise #2](#exercise-2)
 - [Exercise #3](#exercise-3)
+- [Clipped Path](#clipped-path)
 - [References](#references)
 ## Introduction to D3
 D3 (Data-Driven Documents or D3.js) is a javascript library for manipulating documents based on data and is used in conjunction with tools like HTML, SVG, and CSS. It's used by the New York Times to make interactive custom graphics for its [news](https://www.nytimes.com/interactive/2019/11/06/us/politics/elizabeth-warren-policies-taxes.html) [articles](https://www.nytimes.com/interactive/2018/03/27/upshot/make-your-own-mobility-animation.html).
@@ -429,6 +430,37 @@ If you can get this, then adding the other sort option should be more straightfo
 For our last exercise, we will animate the sorting in exercise #2. Recall, we just did some stop-motion animation in exercise #2 (albeit two frames).
 
 Although this may sound hard, it is actually quite simple. All you have to do is add a `transition` to each moving part of the graph (rectangles, x-axis and bar labels) and define a time `duration` for the animation to occur.
+
+## Clipped Path
+Let's go over the code we've skipped so far.
+```javascript
+d3.select('.chart').append("defs")
+  .append("clipPath")
+    .attr("id", "clip")
+  .append("rect")
+    .attr('x', 0)
+    .attr('y', 0)
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", 0.4*height)
+```
+
+This piece of code creates html code that looks like this.
+```html
+<defs>
+  <clipPath id="clip">
+    <rect x="0" y="0" width="900" height="536">
+  </clipPath>
+</defs>
+```
+
+If we inspect the `rect` element using inspector tool in the browser, we can see that it covers the top part of our bar chart. Its not currently drawn because of the `<defs>` tag which means that we just want to store the object and use it at a later time. Well now is the time. We can use this `rect` element to clip our chart to create a different effect. In our css file, we commented out one piece of code.
+```css
+.chart {
+  clip-path: url(#clip); 
+}
+```
+
+This css code block wants to clip the `chart` class with an element that has `id="clip"` (our `clipPath` SVG element). Let's uncomment it and run the code again. See how we are getting the effect of teams entering and leaving the chart from the bottom. Nothing about our base chart has changed. We are just using some visual trickery to create this effect.
 
 ## References
 Mike Bostock's blog (creator of D3.js)  
