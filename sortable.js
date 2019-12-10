@@ -57,7 +57,7 @@ async function createChart() {
   // set up bar groups
   let bar = svg.selectAll(".bar")
     .data(data)
-    .join("g") // equivalent to .enter().append('g')
+    .join("g")
       .attr("class", "bar")
       .attr("transform", d => `translate(0,${y(d.team)})`)
 
@@ -118,6 +118,7 @@ async function createChart() {
       .text('MLB 2018 Season')
 
   // clipping rectangle
+  const z = 0.97*(height / data.length)
   d3.select('.chart').append("defs")
     .append("clipPath")
       .attr("id", "clip")
@@ -125,7 +126,7 @@ async function createChart() {
       .attr('x', 0)
       .attr('y', 0)
       .attr("width", width + margin.left + margin.right)
-      .attr("height", 0.4*height)
+      .attr("height", 0.4*height)    
 
   // sorting transition
   const T = 300

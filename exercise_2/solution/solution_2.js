@@ -34,9 +34,9 @@ var svg = d3.select('body').append('svg')
 // data 
 var data = [{'team':'Boston','value':100},
         {'team':'Detroit','value':85},
-        {'team':'New York','value':80}, 
-        {'team':'Chicago','value':75}, 
-        {'team':'Atlanta','value':30}]
+        {'team':'New York','value':80},
+        {'team':'Atlanta','value':75}, 
+        {'team':'Chicago','value':30}]
 
 
 // scale the range of the data in the domains 
@@ -103,7 +103,7 @@ function updateAlpha() {
         
 
     bar.selectAll('.barlabel')
-        .attr('x', d => x(d.team) + (x.bandwidth()/2) - 14) 
+        .attr('x', d => x(d.team) + (x.bandwidth()/2)) 
     
     
 
@@ -122,6 +122,6 @@ function updateNum() {
         .call(d3.axisBottom(x));
 
     bar.selectAll('.barlabel')
-        .attr('x', d => x(d.team) + (x.bandwidth()/2) - 14) 
+        .attr('x', d => x(d.team) + (x.bandwidth()/2)) 
 
 }
