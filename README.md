@@ -3,21 +3,23 @@
   - [Key Components](#key-components)
 - [Getting Started](#getting-started)
 - [Running D3 Locally](#running-d3-locally)
-  - [Getting D3](#getting-d3)
-    - [Version Note](#version-note)
-  - [HTML setup](#html-setup)
-  - [Graph setup](#graph-setup)
-  - [Reading in Data](#reading-in-data)
-- [Setting up D3 scales](#setting-up-d3-scales)
-- [Adding axes](#adding-axes)
-- [Individual team bar charts](#individual-team-bar-charts)
-- [Exercise #1](#exercise-1)
-- [Animating the graph](#animating-the-graph)
-- [Exercise #2](#exercise-2)
-- [Exercise #3](#exercise-3)
+- [Getting D3](#getting-d3)
+  - [D3 Version](#d3-version)
+- [HTML Setup](#html-setup)
+- [Graph Setup](#graph-setup)
+- [Reading in Data](#reading-in-data)
+- [Setting up D3 Scales](#setting-up-d3-scales)
+- [Adding Axes](#adding-axes)
+- [Individual Team Bar Charts](#individual-team-bar-charts)
+- [Exercise #1 (Vertical Bar Chart)](#exercise-1-vertical-bar-chart)
+- [Animating the Graph](#animating-the-graph)
+- [Exercise #2 (Sort the Chart)](#exercise-2-sort-the-chart)
+- [Exercise #3 (Animated Sort)](#exercise-3-animated-sort)
+  - [Easing](#easing)
+- [Clipped Path](#clipped-path)
 - [References](#references)
 ## Introduction to D3
-D3 (Data-Driven Documents or D3.js) is a javascript library for manipulating documents based on data and is used in conjunction with tools like HTML, SVG, and CSS. It's used by the New York Times to make interactive custom graphics for its [news](https://www.nytimes.com/interactive/2019/11/06/us/politics/elizabeth-warren-policies-taxes.html) [articles](https://www.nytimes.com/interactive/2018/03/27/upshot/make-your-own-mobility-animation.html).
+D3 (Data-Driven Documents or D3.js) is a JavaScript library for manipulating documents based on data and is used in conjunction with tools like HTML, SVG, and CSS. It's used by the [New York Times](https://getdolphins.com/blog/interactive-data-visualizations-new-york-times/) to make interactive custom graphics for its [news](https://www.nytimes.com/interactive/2019/11/06/us/politics/elizabeth-warren-policies-taxes.html) [articles](https://www.nytimes.com/interactive/2018/03/27/upshot/make-your-own-mobility-animation.html).
 
 ### Key Components
 - HTML (HyperText Markup Language)
@@ -37,23 +39,23 @@ D3 (Data-Driven Documents or D3.js) is a javascript library for manipulating doc
 Download the files from the Github repo or the Box link provided in the workshop. The main files we will be working with are `index.html`, `sortable.js`, and `bar.css`. 
 
 ## Running D3 Locally
-To run D3 locally on your PC, you need to set up a web server. Fortunately, Python makes this relatively easy. Open a terminal (i.e. Anaconda Prompt) that has access to Python and run a simple http server with the command `python -m http.server <port number>`. The port number is optional (default is 8000). Then open your browser and go to `localhost:8000` or `127.0.0.1:8000`. You should be able to run the D3 example locally.
+To run D3 locally on your PC, you need to set up a web server. Fortunately, Python makes this relatively easy. Open a terminal (i.e. Anaconda Prompt) that has access to Python and run a simple http server with the command `python -m http.server <port number>`. The port number is optional (default is 8000). Then open your browser and go to `localhost:8000` or `127.0.0.1:8000`. 
 
-### Getting D3
-To use D3, we must load the d3.js library from a CDN with the following snippet.
+## Getting D3
+We load the d3.js library from a CDN with the following snippet.
 ```html
 <script src="https://d3js.org/d3.v5.min.js"></script>
 ```
 
-We'll also use the d3-array library to do some data wrangling to get the data in the right format.
+We'll also use the **d3-array** library to do some data wrangling to get the data in the right format for plotting.
 ```html
 <script src="https://d3js.org/d3-array.v2.min.js"></script>
 ```
 
-#### Version Note
+### D3 Version
 We're using D3 version 5. Most of the online v5 examples are written using something called [Observable notebooks](https://observablehq.com/) (think of it like Jupyter Notebooks for JavaScript). The syntax for Observable notebooks is slightly different than what you would use for HTML. Most of the other examples on the web are for v3 or v4. Ideally, you'll want to look for examples using v4 or v5 on the web. There were some breaking changes made in the conversion from v3 to v4. Its not impossible to figure out from v3 examples but its just more errors to debug.
 
-### HTML setup
+## HTML Setup
 Let's take a quick peek at our HTML file. Its pretty bare bones. The things to note are:
 - loading two JavaScript files `urls.js` and `sortable.js`
 - loading one CSS file `bar.css`
@@ -77,7 +79,7 @@ Let's take a quick peek at our HTML file. Its pretty bare bones. The things to n
 ```
 This is what you would see if you right-click *View page source <kbd>Ctrl+U</kbd>*. Note that this is different than what you would see if you inspected the Elements tab in Chrome using your browser.
 
-### Graph setup
+## Graph Setup
 Now, let's move onto our JavaScript file `sortable.js` and create the function `createChart` that we're going to call. We need to first set up our graph. We start by specifying the dimensions and margins of our graph. The standard D3 convention for setting up margins can be found at https://bl.ocks.org/mbostock/3019563 
 
 Let us follow along with our code. 
@@ -108,9 +110,9 @@ Let's breakdown what this D3 code block is doing.
 - The second-to-last line appends a `g` element to `svg`.
 - The last line applies a transformation (a translation) to the `g` element.
 
-**Note**: There is a D3 distinction between a 2 space and 4 space indentation. Two space indentation means you are returning a new selection and 4 space indentation means working with an existing selection. Don't worry if that means nothing to you at the moment. Just know that its intentional. [REFERENCE NEEDED]
+**Note**: There is a D3 distinction between a 2 space and 4 space indentation. Two space indentation means you are returning a new selection and 4 space indentation means working with an existing selection. Don't worry if that means nothing to you at the moment. Just know that its intentional.
 
-### Reading in Data
+## Reading in Data
 We will be looking at data from Major League Baseball 2018 season and the accumulation of wins by each team as the season progresses.
 
 The data resides in a Github gist. There is also a copy in our folder but I wanted to show you that you can also read files from the web.
@@ -152,7 +154,7 @@ The function does some data wrangling for us.
 I could have done the data wrangling in another language like Python or R and created a different dataset to be read in but wanted to show you that D3 and JavaScript can also do similar things. Our data should look like this after being returned by `filterData`.
 ![data variable](img/data_variable.png)
 
-## Setting up D3 scales
+## Setting up D3 Scales
 Since we are making a horizontal bar chart, we will utilize two scale functions: `scaleLinear` and `scaleBand`. `scaleLinear` creates a linear mapping while `scaleBand` is a mapping specific for bar charts. It will split the range into n (number of teams) bands and compute the positions and widths of the bands. 
 ```javascript
 let y = d3.scaleBand()
@@ -164,7 +166,7 @@ let x = d3.scaleLinear()
     .domain([0, Math.ceil(d3.max(data, d => d.value)/5)*5])
     .range([0, width])
 ```
-## Adding axes
+## Adding Axes
 We define our axis properties. Here it's the scale we want to use `x`, orientation `axisTop()` and approximately how many ticks it should display `ticks(6)`. We append another group element to the already defined `svg` variable using `.append("g")`, assign two classes `x axis` and then call the axis generator `xAxis` to draw it with the specified arguments. Similarly for the y-axis.
 ```javascript
 let xAxis = d3.axisTop(x)
@@ -209,7 +211,7 @@ ylabel = labels.append('text')
     .text('Teams')
 ```
 
-## Individual team bar charts 
+## Individual Team Bar Charts 
 Next, we will start displaying our data on the graph. Ultimately, we want to show the progression of total games won for each baseball game over a period of time. Each team will be represented by a bar, text, logo and a label.
 
 To set up the teams, we must first create groups to contain the collective information for each team. 
@@ -287,7 +289,7 @@ let dateLabel = labels.append('text')
     .text(formatDate(chartDate))
 ```
 
-## Exercise #1
+## Exercise #1 (Vertical Bar Chart)
 Lets try to apply what we've learned so far with an exercise. 
 
 Go into the `exercise_1` folder and open up `exercise_1.js`. Change the url to `localhost:8000/exercise_1`. You should see a horizontal bar chart. 
@@ -305,8 +307,7 @@ To approach this,  we can split it up into a couple steps:
 
 4. Position the bar labels accordingly.
 
-## Animating the graph
-
+## Animating the Graph
 Now that we have an idea of how the graph set up and plotting works, we will dive into animation. Going back to our inital example, the animation happens within HTML's `setInterval()` method.  The `setInterval()` method calls a function at specified intervals (in our case, `T`). Our function will perform one transition every interval.
 
 For each transition, we need to do the following:
@@ -317,7 +318,6 @@ For each transition, we need to do the following:
 - sort the data and update the y-axis
 
 Here we set up the period, `T`, and assign a variable name to our setInterval method. The first thing we do is increment the date by one day and then update the `dateLabel` variable with new text.
-
 ```javascript
 const T = 300
 let dailyUpdate = setInterval(function() {
@@ -378,7 +378,7 @@ if (chartDate > new Date(2018,9,1)) {
 }
 ```
 
-## Exercise #2
+## Exercise #2 (Sort the Chart)
 We will start with the solution from Exercise #1. 
 
 Go into folder `exercise_2` and open up `index.html` and `exercise_2.js`. 
@@ -425,16 +425,50 @@ bar.selectAll('.barlabel') ...
 ```
 If you can get this, then adding the other sort option should be more straightforward. If you get this working, try changing the dataset to see if it still works.
 
-## Exercise #3
+## Exercise #3 (Animated Sort)
 For our last exercise, we will animate the sorting in exercise #2. Recall, we just did some stop-motion animation in exercise #2 (albeit two frames).
 
 Although this may sound hard, it is actually quite simple. All you have to do is add a `transition` to each moving part of the graph (rectangles, x-axis and bar labels) and define a time `duration` for the animation to occur.
+
+### Easing
+If you get the `transition` working, try adding an easing function (e.g. `.ease(d3.easeBounce)`) to the transition. Eased transitions control the motion of the elements during a transition. Here are some examples of how to use it (v4). https://bl.ocks.org/d3noob/1ea51d03775b9650e8dfd03474e202fe
+
+## Clipped Path
+Let's go over the code we've skipped so far.
+```javascript
+d3.select('.chart').append("defs")
+  .append("clipPath")
+    .attr("id", "clip")
+  .append("rect")
+    .attr('x', 0)
+    .attr('y', 0)
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", 0.4*height)
+```
+
+This piece of D3 code creates the following html code snippet.
+```html
+<defs>
+  <clipPath id="clip">
+    <rect x="0" y="0" width="900" height="536">
+  </clipPath>
+</defs>
+```
+
+If we inspect the `rect` element using inspector tool in the browser, we can see that it covers the top part of our bar chart. Its not currently drawn because of the `<defs>` tag which means that we just want to store the object and use it at a later time. Well now is the time. We can use this `rect` element to clip our chart to create a different effect. In our css file, we commented out one piece of code.
+```css
+.chart {
+  clip-path: url(#clip); 
+}
+```
+
+This css code block wants to clip the `chart` class with an element that has `id="clip"` (our `clipPath` SVG element). Let's uncomment it and run the code again. See how we are getting the effect of teams entering and leaving the chart from the bottom. Nothing about our base chart has changed. We are just using some visual trickery to create this effect.
 
 ## References
 Mike Bostock's blog (creator of D3.js)  
 https://bost.ocks.org/mike/
 
-A beginner's tutorial to D3.js by Mike Bostock
+A beginner's tutorial to D3.js by Mike Bostock  
 https://bost.ocks.org/mike/circles/
 
 Gallery of D3.js examples  
@@ -446,5 +480,5 @@ https://www.d3-graph-gallery.com/index.html
 D3.js e-book to understand basics (they have books for v3, v4, and v5). It has line-by-line breakdown of code.
 https://leanpub.com/d3-t-and-t-v5 
 
-Alex's Sandbox of D3.js Examples  
+Alex's sandbox of D3.js examples  
 https://github.com/caocscar/d3js-examples

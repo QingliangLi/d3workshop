@@ -118,7 +118,6 @@ async function createChart() {
       .text('MLB 2018 Season')
 
   // clipping rectangle
-  const z = 0.97*(height / data.length)
   d3.select('.chart').append("defs")
     .append("clipPath")
       .attr("id", "clip")
