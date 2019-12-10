@@ -428,6 +428,8 @@ If you can get this, then adding the other sort option should be more straightfo
 ## Exercise #3 (Animated Sort)
 For our last exercise, we will animate the sorting in exercise #2. Recall, we just did some stop-motion animation in exercise #2 (albeit two frames).
 
+![Alt Text](https://media.giphy.com/media/JTP0B9YicPKVuYMgXN/giphy.gif)
+
 Although this may sound hard, it is actually quite simple. All you have to do is add a `transition` to each moving part of the graph (rectangles, x-axis and bar labels) and define a time `duration` for the animation to occur.
 
 ### Easing
