@@ -55,6 +55,8 @@ var rect = bar.append('rect')
     .attr("width", d => x(d.value))
     .attr("y", d => y(d.team))
     .attr("height", y.bandwidth())
+    .attr("x", 0)
+
 
     .style('fill', d => d3.interpolatePurples(d.value/100))
 
